@@ -41,9 +41,9 @@ extern "C"
 
 /*-------------------------- CLOCK CONFIG BEGIN --------------------------*/
 
-#define BSP_CLOCK_SOURCE                  ("HSI")
-#define BSP_CLOCK_SOURCE_FREQ_MHZ         ((int32_t)0)
-#define BSP_CLOCK_SYSTEM_FREQ_MHZ         ((int32_t)180)
+#define BSP_CLOCK_SOURCE                  ("HSE")
+#define BSP_CLOCK_SOURCE_FREQ_MHZ         ((int32_t)25)
+#define BSP_CLOCK_SYSTEM_FREQ_MHZ         ((int32_t)480)
 
 /*-------------------------- CLOCK CONFIG END --------------------------*/
 
@@ -363,6 +363,8 @@ extern "C"
 /*#define BSP_USING_ON_CHIP_FLASH*/
 
 /*-------------------------- ON_CHIP_FLASH CONFIG END --------------------------*/
+
+#define BSP_USING_SDRAM
 
 #ifdef __cplusplus
 }
