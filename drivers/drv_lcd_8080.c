@@ -70,8 +70,8 @@ static int LCD_Port_Init(void)
     Timing.DataLatency = 17;
     Timing.AccessMode = FMC_ACCESS_MODE_A;
     /* ExtTiming */
-    ExtTiming.AddressSetupTime = 15;
-    ExtTiming.AddressHoldTime = 15;
+    ExtTiming.AddressSetupTime = 3;
+    ExtTiming.AddressHoldTime = 3;
     ExtTiming.DataSetupTime = 15;
     ExtTiming.BusTurnAroundDuration = 15;
     ExtTiming.CLKDivision = 16;
@@ -103,8 +103,108 @@ static int LCD_Init(void)
     LOG_D("LCD ID 6 is %x", (rt_uint32_t)LCD_Port->lcd_data);
 
     /* ILI9481 initialize */
+    LCD_WR_REG(0x11);
+    rt_thread_mdelay(200);
+    LCD_WR_REG(0x11);
+    rt_thread_mdelay(200);
+    //2 ok20200803
+    LCD_WR_REG(0xD0);
+    LCD_WR_DATA(0x07);
+    LCD_WR_DATA(0x42);
+    LCD_WR_DATA(0x1b);
 
+    LCD_WR_REG(0xD1);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x05);
+    LCD_WR_DATA(0x0c);
+
+    LCD_WR_REG(0xD2);
+    LCD_WR_DATA(0x01);
+    LCD_WR_DATA(0x11);
+
+    LCD_WR_REG(0xC0);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x3B);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x02);
+    LCD_WR_DATA(0x11);
+
+    LCD_WR_REG(0xC5);
+    LCD_WR_DATA(0x02);
+
+    LCD_WR_REG(0xC8);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x22);
+    LCD_WR_DATA(0x37);
+    LCD_WR_DATA(0x20);
+    LCD_WR_DATA(0x04);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x04);
+    LCD_WR_DATA(0x55);
+    LCD_WR_DATA(0x77);
+    LCD_WR_DATA(0x02);
+    LCD_WR_DATA(0x04);
+    LCD_WR_DATA(0x00);
+
+    ///20210809
+    ///1
+    LCD_WR_REG(0xF0);
+    LCD_WR_DATA(0x00);
+    LCD_WR_REG(0xF6);
+    LCD_WR_DATA(0x84);  ///0x80
+    LCD_WR_REG(0xF3);
+    LCD_WR_DATA(0x02);
+    LCD_WR_DATA(0x1A);
+    LCD_WR_REG(0xF7);
+    LCD_WR_DATA(0x80);
+
+    ///2
+    //LCD_WR_REG(0xF0);
+    //LCD_WR_DATA(0x01);
+    //LCD_WR_REG(0xF6);
+    //LCD_WR_DATA(0x80);
+    //LCD_WR_REG(0xF3);
+    //LCD_WR_DATA(0x40);
+    //LCD_WR_DATA(0x0A);
+    //LCD_WR_REG(0xF7);
+    //LCD_WR_DATA(0x80);
+
+    LCD_WR_REG(0x36);
+    LCD_WR_DATA(0x0A);
+
+    LCD_WR_REG(0x3A);
+    LCD_WR_DATA(0x55);
+
+    //LCD_WR_REG(0xB3);
+    //LCD_WR_DATA(0x02);
+    //LCD_WR_DATA(0x03);
+    //LCD_WR_DATA(0x03);
+    //LCD_WR_DATA(0x21);
+
+    rt_thread_mdelay(120);
+
+    /* Set display window full screen */
+    LCD_WR_REG(0x2A);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA((320 - 1) >> 8);
+    LCD_WR_DATA((320 - 1) & 0xff);
+
+    LCD_WR_REG(0x2B);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA(0x00);
+    LCD_WR_DATA((480 - 1) >> 8);
+    LCD_WR_DATA((480 - 1) & 0xff);
+
+    LCD_WR_REG(0x2C);
+
+    /* Clear LCD */
+    for(int i = 0; i < (320 * 480); i++)
+        LCD_WR_DATA(0x0000);
+
+    LCD_WR_REG(0x29);
+    LCD_WR_REG(0x3C);
     return RT_EOK;
 }
 
-INIT_APP_EXPORT(LCD_Init);
+INIT_DEVICE_EXPORT(LCD_Init);

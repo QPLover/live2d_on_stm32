@@ -194,6 +194,7 @@ INIT_BOARD_EXPORT(SDRAM_Init);
 int sdram_test(void)
 {
     int i = 0;
+    int data_inv_flag = 0;
     uint32_t start_time = 0, time_cast = 0;
 #if SDRAM_DATA_WIDTH == 8
     char data_width = 1;
@@ -211,44 +212,91 @@ int sdram_test(void)
     start_time = rt_tick_get();
     for (i = 0; i < SDRAM_SIZE / data_width; i++)
     {
+        if (data_inv_flag)
+        {
 #if SDRAM_DATA_WIDTH == 8
-        *(__IO uint8_t *)(SDRAM_BANK_ADDR + i * data_width) = (uint8_t)(i % 100);
+            *(__IO uint8_t *)(SDRAM_BANK_ADDR + i * data_width) = (uint8_t)0x55;
 #elif SDRAM_DATA_WIDTH == 16
-        *(__IO uint16_t *)(SDRAM_BANK_ADDR + i * data_width) = (uint16_t)(i % 1000);
+            *(__IO uint16_t *)(SDRAM_BANK_ADDR + i * data_width) = (uint16_t)0x5555;
 #else
-        *(__IO uint32_t *)(SDRAM_BANK_ADDR + i * data_width) = (uint32_t)(i % 1000);
+            *(__IO uint32_t *)(SDRAM_BANK_ADDR + i * data_width) = (uint32_t)0x55555555;
 #endif
+        }
+        else
+        {
+#if SDRAM_DATA_WIDTH == 8
+            *(__IO uint8_t *)(SDRAM_BANK_ADDR + i * data_width) = (uint8_t)0xaa;
+#elif SDRAM_DATA_WIDTH == 16
+            *(__IO uint16_t *)(SDRAM_BANK_ADDR + i * data_width) = (uint16_t)0xaaaa;
+#else
+            *(__IO uint32_t *)(SDRAM_BANK_ADDR + i * data_width) = (uint32_t)0xaaaaaaaa;
+#endif
+        }
+
+        data_inv_flag = !data_inv_flag;
     }
     time_cast = rt_tick_get() - start_time;
     LOG_D("Write data success, total time: %d.%03dS.", time_cast / RT_TICK_PER_SECOND,
           time_cast % RT_TICK_PER_SECOND / ((RT_TICK_PER_SECOND * 1 + 999) / 1000));
 
+    data_inv_flag = 0;
+
     /* read data */
     LOG_D("start Reading and verifying data, waiting....");
     for (i = 0; i < SDRAM_SIZE / data_width; i++)
     {
+        if (data_inv_flag)
+        {
 #if SDRAM_DATA_WIDTH == 8
-        data = *(__IO uint8_t *)(SDRAM_BANK_ADDR + i * data_width);
-        if (data != i % 100)
-        {
-            LOG_E("SDRAM test failed!");
-            break;
-        }
+            data = *(__IO uint8_t *)(SDRAM_BANK_ADDR + i * data_width);
+            if (data != 0x55)
+            {
+                LOG_E("SDRAM test failed!");
+                break;
+            }
 #elif SDRAM_DATA_WIDTH == 16
-        data = *(__IO uint16_t *)(SDRAM_BANK_ADDR + i * data_width);
-        if (data != i % 1000)
-        {
-            LOG_E("SDRAM test failed!");
-            break;
-        }
+            data = *(__IO uint16_t *)(SDRAM_BANK_ADDR + i * data_width);
+            if (data != 0x5555)
+            {
+                LOG_E("SDRAM test failed!");
+                break;
+            }
 #else
-        data = *(__IO uint32_t *)(SDRAM_BANK_ADDR + i * data_width);
-        if (data != i % 1000)
-        {
-            LOG_E("SDRAM test failed!");
-            break;
-        }
+            data = *(__IO uint32_t *)(SDRAM_BANK_ADDR + i * data_width);
+            if (data != 0x55555555)
+            {
+                LOG_E("SDRAM test failed!");
+                break;
+            }
 #endif
+        }
+        else
+        {
+#if SDRAM_DATA_WIDTH == 8
+            data = *(__IO uint8_t *)(SDRAM_BANK_ADDR + i * data_width);
+            if (data != 0xaa)
+            {
+                LOG_E("SDRAM test failed!");
+                break;
+            }
+#elif SDRAM_DATA_WIDTH == 16
+            data = *(__IO uint16_t *)(SDRAM_BANK_ADDR + i * data_width);
+            if (data != 0xaaaa)
+            {
+                LOG_E("SDRAM test failed!");
+                break;
+            }
+#else
+            data = *(__IO uint32_t *)(SDRAM_BANK_ADDR + i * data_width);
+            if (data != 0xaaaaaaaa)
+            {
+                LOG_E("SDRAM test failed!");
+                break;
+            }
+#endif
+        }
+
+        data_inv_flag = !data_inv_flag;
     }
 
     if (i >= SDRAM_SIZE / data_width)
