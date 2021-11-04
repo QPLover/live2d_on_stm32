@@ -12,29 +12,19 @@
 #include <rtdevice.h>
 #include <board.h>
 
+#ifdef BSP_USING_LCD_8080
+#include <lcd_port.h>
+
 #define DRV_DEBUG
 #define LOG_TAG             "drv.lcd_8080"
 #include <drv_log.h>
 
-typedef struct
-{
-    volatile rt_uint16_t lcd_cmd;
-    volatile rt_uint16_t lcd_data;
-}LCD_PortTypeDef;
+extern void stm32_8080_lcd_init(void);
+//extern void stm32_8080_lcd_config(rt_uint32_t pixel_format);
+//extern void stm32_8080_display_on(void);
+//extern void stm32_8080_display_off(void);
 
 SRAM_HandleTypeDef hsram1;
-#define LCD_Base    (0x60000000 | (0x00 << 26) | (0xffff * 2))
-#define LCD_Port    ((LCD_PortTypeDef *) LCD_Base)
-#define LCD_RST     GET_PIN(D, 6)
-
-#define LCD_WR_REG(__reg_val) LCD_Port->lcd_cmd = __reg_val
-#define LCD_WR_DATA(__data_val) LCD_Port->lcd_data = __data_val
-#define LCD_WriteReg(__reg_val, __data_val) \
-        do{                                     \
-            LCD_Port->lcd_cmd = __reg_val;           \
-            LCD_Port->lcd_data = __data_val;         \
-        }while(0)                               \
-
 
 static int LCD_Port_Init(void)
 {
@@ -85,126 +75,19 @@ INIT_BOARD_EXPORT(LCD_Port_Init);
 
 static int LCD_Init(void)
 {
-    rt_pin_mode(LCD_RST, PIN_MODE_OUTPUT);
+    rt_pin_mode(LCD_RST_GPIO_NUM, PIN_MODE_OUTPUT);
 
     /* Reset LCD */
-    rt_pin_write(LCD_RST, PIN_LOW);
+    rt_pin_write(LCD_RST_GPIO_NUM, PIN_LOW);
     rt_thread_mdelay(10);
-    rt_pin_write(LCD_RST, PIN_HIGH);
+    rt_pin_write(LCD_RST_GPIO_NUM, PIN_HIGH);
     rt_thread_mdelay(20);
 
-    /* Read LCD ID */
-    LCD_Port->lcd_cmd = 0xbf;
-    LOG_D("LCD ID 1 is %x", (rt_uint32_t)LCD_Port->lcd_data);
-    LOG_D("LCD ID 2 is %x", (rt_uint32_t)LCD_Port->lcd_data);
-    LOG_D("LCD ID 3 is %x", (rt_uint32_t)LCD_Port->lcd_data);
-    LOG_D("LCD ID 4 is %x", (rt_uint32_t)LCD_Port->lcd_data);
-    LOG_D("LCD ID 5 is %x", (rt_uint32_t)LCD_Port->lcd_data);
-    LOG_D("LCD ID 6 is %x", (rt_uint32_t)LCD_Port->lcd_data);
+    /* LCD initialize */
+    stm32_8080_lcd_init();
 
-    /* ILI9481 initialize */
-    LCD_WR_REG(0x11);
-    rt_thread_mdelay(200);
-    LCD_WR_REG(0x11);
-    rt_thread_mdelay(200);
-    //2 ok20200803
-    LCD_WR_REG(0xD0);
-    LCD_WR_DATA(0x07);
-    LCD_WR_DATA(0x42);
-    LCD_WR_DATA(0x1b);
-
-    LCD_WR_REG(0xD1);
-    LCD_WR_DATA(0x00);
-    LCD_WR_DATA(0x05);
-    LCD_WR_DATA(0x0c);
-
-    LCD_WR_REG(0xD2);
-    LCD_WR_DATA(0x01);
-    LCD_WR_DATA(0x11);
-
-    LCD_WR_REG(0xC0);
-    LCD_WR_DATA(0x00);
-    LCD_WR_DATA(0x3B);
-    LCD_WR_DATA(0x00);
-    LCD_WR_DATA(0x02);
-    LCD_WR_DATA(0x11);
-
-    LCD_WR_REG(0xC5);
-    LCD_WR_DATA(0x02);
-
-    LCD_WR_REG(0xC8);
-    LCD_WR_DATA(0x00);
-    LCD_WR_DATA(0x22);
-    LCD_WR_DATA(0x37);
-    LCD_WR_DATA(0x20);
-    LCD_WR_DATA(0x04);
-    LCD_WR_DATA(0x00);
-    LCD_WR_DATA(0x04);
-    LCD_WR_DATA(0x55);
-    LCD_WR_DATA(0x77);
-    LCD_WR_DATA(0x02);
-    LCD_WR_DATA(0x04);
-    LCD_WR_DATA(0x00);
-
-    ///20210809
-    ///1
-    LCD_WR_REG(0xF0);
-    LCD_WR_DATA(0x00);
-    LCD_WR_REG(0xF6);
-    LCD_WR_DATA(0x84);  ///0x80
-    LCD_WR_REG(0xF3);
-    LCD_WR_DATA(0x02);
-    LCD_WR_DATA(0x1A);
-    LCD_WR_REG(0xF7);
-    LCD_WR_DATA(0x80);
-
-    ///2
-    //LCD_WR_REG(0xF0);
-    //LCD_WR_DATA(0x01);
-    //LCD_WR_REG(0xF6);
-    //LCD_WR_DATA(0x80);
-    //LCD_WR_REG(0xF3);
-    //LCD_WR_DATA(0x40);
-    //LCD_WR_DATA(0x0A);
-    //LCD_WR_REG(0xF7);
-    //LCD_WR_DATA(0x80);
-
-    LCD_WR_REG(0x36);
-    LCD_WR_DATA(0x0A);
-
-    LCD_WR_REG(0x3A);
-    LCD_WR_DATA(0x55);
-
-    //LCD_WR_REG(0xB3);
-    //LCD_WR_DATA(0x02);
-    //LCD_WR_DATA(0x03);
-    //LCD_WR_DATA(0x03);
-    //LCD_WR_DATA(0x21);
-
-    rt_thread_mdelay(120);
-
-    /* Set display window full screen */
-    LCD_WR_REG(0x2A);
-    LCD_WR_DATA(0x00);
-    LCD_WR_DATA(0x00);
-    LCD_WR_DATA((320 - 1) >> 8);
-    LCD_WR_DATA((320 - 1) & 0xff);
-
-    LCD_WR_REG(0x2B);
-    LCD_WR_DATA(0x00);
-    LCD_WR_DATA(0x00);
-    LCD_WR_DATA((480 - 1) >> 8);
-    LCD_WR_DATA((480 - 1) & 0xff);
-
-    LCD_WR_REG(0x2C);
-
-    /* Clear LCD */
-    for(int i = 0; i < (320 * 480); i++)
-        LCD_WR_DATA(0x0000);
-
-    LCD_WR_REG(0x29);
-    LCD_WR_REG(0x3C);
     return RT_EOK;
 }
 
 INIT_DEVICE_EXPORT(LCD_Init);
+#endif /* BSP_USING_LCD_8080 */

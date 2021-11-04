@@ -365,6 +365,7 @@ extern "C"
 /*-------------------------- ON_CHIP_FLASH CONFIG END --------------------------*/
 
 #define BSP_USING_SDRAM
+#define BSP_USING_LCD_8080
 
 #ifdef __cplusplus
 }
