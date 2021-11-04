@@ -1,0 +1,3 @@
+[submodule "painterengine"]
+	path = painterengine
+	url = ../../QPLover/PainterEngine.git
