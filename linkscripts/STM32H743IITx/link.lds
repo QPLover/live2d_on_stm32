@@ -7,6 +7,7 @@ MEMORY
 {
 ROM (rx) : ORIGIN =0x08000000,LENGTH =1024k
 RAM (rw) : ORIGIN =0x24000000,LENGTH =384k
+RAM_EX (rw) : ORIGIN =0xC0000000,LENGTH =32768k
 }
 ENTRY(Reset_Handler)
 _system_stack_size = 0x400;
@@ -131,6 +132,15 @@ SECTIONS
         *(.bss.init)
     } > RAM
     __bss_end = .;
+
+    .ram_ex (NOLOAD) : ALIGN(4)
+    {
+    	. = ALIGN(4);
+    	*(.ram_ex)
+    	*(.ram_ex.*)
+    	. = ALIGN(4);
+    	ram_ex_free__ = .;
+    } > RAM_EX
 
     _end = .;
 

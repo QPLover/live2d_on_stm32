@@ -12,6 +12,9 @@
 
 #include <rtdef.h>
 
+#define  LCD_WIDTH    320
+#define  LCD_HEIGHT   480
+
 typedef struct
 {
     volatile rt_uint16_t lcd_cmd;

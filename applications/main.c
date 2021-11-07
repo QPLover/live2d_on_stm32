@@ -18,62 +18,49 @@
 #include <sdram_port.h>
 #include <lcd_port.h>
 
-rt_uint8_t *px_cache;
-
-static void lcd_refresh(px_surface *lcd_framebuffer)
-{
-    px_color color_argb888;
-    rt_uint16_t color_rgb565;
-
-    if (lcd_framebuffer->height == 480 && lcd_framebuffer->width == 320)
-    {
-        for (int i = 0; i < (320 * 480); i++)
-        {
-            color_argb888 = lcd_framebuffer->surfaceBuffer[i];
-            color_rgb565 = (color_argb888._argb.r >> 3) << 11 \
-                           | (color_argb888._argb.g >> 2) << 5 \
-                           | (color_argb888._argb.b >> 3);
-            LCD_WR_DATA(color_rgb565);
-        }
-    }
-    else
-    {
-        LOG_E("Framebuffer size is not equal lcd resolution");
-        LOG_E("framebuffer height %d, width %d", lcd_framebuffer->height, lcd_framebuffer->width);
-    }
-}
+/* PainterEngine mempool */
+RT_SECTION(".ram_ex") rt_uint8_t px_cache[0x800000];
 
 int main(void)
 {
     int count = 1;
+    rt_device_t lcd_dev;
+    struct rt_device_graphic_info lcd_info;
     px_surface lcd_surface;
     px_memorypool mp;
-    px_cache = (rt_uint8_t *)0XC0000000;
 
-    mp = MP_Create(px_cache, (px_uint)0x2000000);
-    PX_SurfaceCreate(&mp, 320, 480, &lcd_surface);
+    lcd_dev = rt_device_find("lcd");
+    rt_device_open(lcd_dev, 0);
+    rt_device_control(lcd_dev, RTGRAPHIC_CTRL_GET_INFO, &lcd_info);
+    LOG_D("lcd width %d, height %d, framebuffer addr %x", lcd_info.width, lcd_info.height, lcd_info.framebuffer);
+
+    mp = MP_Create(px_cache, (px_uint)0x800000);
+
+    lcd_surface.height = lcd_info.height;
+    lcd_surface.width = lcd_info.width;
+    lcd_surface.surfaceBuffer = (px_color *)lcd_info.framebuffer;
+    lcd_surface.MP = &mp;
+    lcd_surface.limit_left = 0;
+    lcd_surface.limit_top = 0;
+    lcd_surface.limit_right = lcd_info.width - 1;
+    lcd_surface.limit_bottom = lcd_info.height - 1;
+    PX_memdwordset(lcd_surface.surfaceBuffer, 0, lcd_info.height * lcd_info.width);
+
+    LOG_D("lcd width %d, height %d, framebuffer addr %x", lcd_surface.width, lcd_surface.height, lcd_surface.surfaceBuffer);
+
     PX_SurfaceClear(&lcd_surface, 0, 0, 320 - 1, 480 - 1, PX_COLOR(0xff, 0x00, 0x00, 0x00));
-    lcd_refresh(&lcd_surface);
+    rt_device_control(lcd_dev, RTGRAPHIC_CTRL_RECT_UPDATE, RT_NULL);
 
     while (count++)
     {
         PX_GeoDrawCircle(&lcd_surface, 320 / 2, 480 / 2, 100, 5, PX_COLOR(0xff, 0xff, 0x00, 0x00));
-        lcd_refresh(&lcd_surface);
-        rt_thread_mdelay(200);
-        PX_GeoDrawCircle(&lcd_surface, 320 / 2, 480 / 2, 100, 5, PX_COLOR(0xff, 0xff, 0xff, 0x00));
-        lcd_refresh(&lcd_surface);
+        rt_device_control(lcd_dev, RTGRAPHIC_CTRL_RECT_UPDATE, RT_NULL);
         rt_thread_mdelay(200);
         PX_GeoDrawCircle(&lcd_surface, 320 / 2, 480 / 2, 100, 5, PX_COLOR(0xff, 0x00, 0xff, 0x00));
-        lcd_refresh(&lcd_surface);
-        rt_thread_mdelay(200);
-        PX_GeoDrawCircle(&lcd_surface, 320 / 2, 480 / 2, 100, 5, PX_COLOR(0xff, 0x00, 0xff, 0xff));
-        lcd_refresh(&lcd_surface);
+        rt_device_control(lcd_dev, RTGRAPHIC_CTRL_RECT_UPDATE, RT_NULL);
         rt_thread_mdelay(200);
         PX_GeoDrawCircle(&lcd_surface, 320 / 2, 480 / 2, 100, 5, PX_COLOR(0xff, 0x00, 0x00, 0xff));
-        lcd_refresh(&lcd_surface);
-        rt_thread_mdelay(200);
-        PX_GeoDrawCircle(&lcd_surface, 320 / 2, 480 / 2, 100, 5, PX_COLOR(0xff, 0xff, 0x00, 0xff));
-        lcd_refresh(&lcd_surface);
+        rt_device_control(lcd_dev, RTGRAPHIC_CTRL_RECT_UPDATE, RT_NULL);
         rt_thread_mdelay(200);
    }
 

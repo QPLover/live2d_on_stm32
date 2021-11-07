@@ -19,12 +19,75 @@
 #define LOG_TAG             "drv.lcd_8080"
 #include <drv_log.h>
 
+#define LCD_DEVICE(dev)     (struct drv_lcd_device*)(dev)
+
+SRAM_HandleTypeDef hsram1;
+
+struct drv_lcd_device
+{
+    struct rt_device parent;
+
+    struct rt_device_graphic_info lcd_info;
+};
+
+struct drv_lcd_device _lcd;
+
+#define LCD_PIXEL_NUM (LCD_WIDTH * LCD_HEIGHT)
+#define LCD_BUF_SIZE (LCD_PIXEL_NUM * 4)
+RT_SECTION(".ram_ex") rt_uint8_t _lcd_framebuffer[LCD_BUF_SIZE];
+
 extern void stm32_8080_lcd_init(void);
 //extern void stm32_8080_lcd_config(rt_uint32_t pixel_format);
 //extern void stm32_8080_display_on(void);
 //extern void stm32_8080_display_off(void);
 
-SRAM_HandleTypeDef hsram1;
+static rt_err_t drv_lcd_init(struct rt_device *device)
+{
+    struct drv_lcd_device *lcd = LCD_DEVICE(device);
+    /* nothing, right now */
+    lcd = lcd;
+    return RT_EOK;
+}
+
+static rt_err_t drv_lcd_control(struct rt_device *device, int cmd, void *args)
+{
+    struct drv_lcd_device *lcd = LCD_DEVICE(device);
+
+    switch (cmd)
+    {
+    case RTGRAPHIC_CTRL_RECT_UPDATE:
+    {
+        rt_uint16_t color_rgb565;
+        rt_uint32_t color_index = 0;
+
+        /* update */
+        for (int i = 0; i < LCD_PIXEL_NUM; i++)
+        {
+            color_rgb565 = (lcd->lcd_info.framebuffer[color_index + 2] >> 3) \
+                           | (lcd->lcd_info.framebuffer[color_index + 1] >> 2) << 5 \
+                           | (lcd->lcd_info.framebuffer[color_index] >> 3) << 11;
+            LCD_WR_DATA(color_rgb565);
+            color_index += 4;
+        }
+    }
+    break;
+
+    case RTGRAPHIC_CTRL_GET_INFO:
+    {
+        struct rt_device_graphic_info *info = (struct rt_device_graphic_info *)args;
+
+        RT_ASSERT(info != RT_NULL);
+        info->pixel_format  = lcd->lcd_info.pixel_format;
+        info->bits_per_pixel = 24;
+        info->width         = lcd->lcd_info.width;
+        info->height        = lcd->lcd_info.height;
+        info->framebuffer   = lcd->lcd_info.framebuffer;
+    }
+    break;
+    }
+
+    return RT_EOK;
+}
 
 static int LCD_Port_Init(void)
 {
@@ -73,11 +136,48 @@ static int LCD_Port_Init(void)
 
 INIT_BOARD_EXPORT(LCD_Port_Init);
 
+#ifdef RT_USING_DEVICE_OPS
+const static struct rt_device_ops lcd_ops =
+{
+    drv_lcd_init,
+    RT_NULL,
+    RT_NULL,
+    RT_NULL,
+    RT_NULL,
+    drv_lcd_control
+};
+#endif
+
 static int LCD_Init(void)
 {
-    rt_pin_mode(LCD_RST_GPIO_NUM, PIN_MODE_OUTPUT);
+    struct rt_device *device = &_lcd.parent;
+
+    /* memset _lcd to zero */
+    rt_memset(&_lcd, 0x00, sizeof(_lcd));
+
+    /* config LCD dev info */
+    _lcd.lcd_info.height = LCD_HEIGHT;
+    _lcd.lcd_info.width = LCD_WIDTH;
+    _lcd.lcd_info.bits_per_pixel = 24;
+    _lcd.lcd_info.pixel_format = RTGRAPHIC_PIXEL_FORMAT_ABGR888;
+    _lcd.lcd_info.framebuffer = &_lcd_framebuffer[0];
+
+    /* memset buff to 0x00 */
+    rt_memset(_lcd.lcd_info.framebuffer, 0x00, LCD_BUF_SIZE);
+
+    device->type    = RT_Device_Class_Graphic;
+#ifdef RT_USING_DEVICE_OPS
+    device->ops     = &lcd_ops;
+#else
+    device->init    = drv_lcd_init;
+    device->control = drv_lcd_control;
+#endif
+
+    /* register lcd device */
+    rt_device_register(device, "lcd", RT_DEVICE_FLAG_RDWR);
 
     /* Reset LCD */
+    rt_pin_mode(LCD_RST_GPIO_NUM, PIN_MODE_OUTPUT);
     rt_pin_write(LCD_RST_GPIO_NUM, PIN_LOW);
     rt_thread_mdelay(10);
     rt_pin_write(LCD_RST_GPIO_NUM, PIN_HIGH);
