@@ -15,9 +15,6 @@
 #define DBG_LVL DBG_LOG
 #include <rtdbg.h>
 
-#include <sdram_port.h>
-#include <lcd_port.h>
-
 /* PainterEngine mempool */
 RT_SECTION(".ram_ex") rt_uint8_t px_cache[0x800000];
 

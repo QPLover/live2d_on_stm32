@@ -266,7 +266,9 @@ extern "C"
  *
  */
 
-/*#define BSP_USING_SDIO*/
+#define BSP_USING_SDIO1
+#define BSP_USING_FS
+#define BSP_USING_SDCARD_FS
 
 /*-------------------------- SDIO CONFIG END --------------------------*/
 

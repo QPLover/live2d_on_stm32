@@ -67,6 +67,11 @@ int clock_information(void)
 }
 INIT_BOARD_EXPORT(clock_information);
 
+RT_WEAK void PeriphCommonClock_Config(void)
+{
+    return;
+}
+
 void clk_init(char *clk_source, int source_freq, int target_freq)
 {
     /*
@@ -74,5 +79,7 @@ void clk_init(char *clk_source, int source_freq, int target_freq)
      * system_clock_config(target_freq);
      */
     extern void SystemClock_Config(void);
+    extern void PeriphCommonClock_Config(void);
     SystemClock_Config();
+    PeriphCommonClock_Config();
 }
