@@ -126,9 +126,11 @@ void stm32_8080_lcd_init(void)
 
     LCD_WR_REG(0x2C);
 
-    /* Clear LCD */
+    /* Clear GRAM */
     for (int i = 0; i < (320 * 480); i++)
+    {
         LCD_WR_DATA(0x0000);
+    }
 
     LCD_WR_REG(0x29);
     LCD_WR_REG(0x3C);

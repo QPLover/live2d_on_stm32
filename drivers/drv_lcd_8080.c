@@ -21,7 +21,7 @@
 
 #define LCD_DEVICE(dev)     (struct drv_lcd_device*)(dev)
 
-SRAM_HandleTypeDef hsram1;
+static SRAM_HandleTypeDef hsram1;
 
 struct drv_lcd_device
 {
@@ -63,6 +63,7 @@ static rt_err_t drv_lcd_control(struct rt_device *device, int cmd, void *args)
         /* update */
         for (int i = 0; i < LCD_PIXEL_NUM; i++)
         {
+            /* Convert abgr888 to rgb565 */
             color_rgb565 = (lcd->lcd_info.framebuffer[color_index + 2] >> 3) \
                            | (lcd->lcd_info.framebuffer[color_index + 1] >> 2) << 5 \
                            | (lcd->lcd_info.framebuffer[color_index] >> 3) << 11;
