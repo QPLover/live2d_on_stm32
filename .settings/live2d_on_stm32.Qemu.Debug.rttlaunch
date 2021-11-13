@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<launchConfiguration type="org.rtthread.studio.debug.gdbjtag.stlink.launchConfigurationType">
+<launchConfiguration type="ilg.gnumcueclipse.debug.gdbjtag.qemu.launchConfigurationType">
+<booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.doContinue" value="true"/>
+<booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.doDebugInRam" value="false"/>
+<booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.doFirstReset" value="false"/>
+<booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.doSecondReset" value="true"/>
+<booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.doStartGdbServer" value="true"/>
+<booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.enableSemihosting" value="true"/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbClientOtherCommands" value="set mem inaccessible-by-default off&#10;"/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbClientOtherOptions" value=""/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbServerBoardModel" value="?"/>
+<intAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbServerCpuQuantity" value="1"/>
+<booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbServerEnableNetwork" value="false"/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbServerExecutable" value="${debugger_install_path}/${qemu_debugger_relative_path}\qemu-system-arm.exe"/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbServerExtraQemuCmd" value=""/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbServerSdcardMemory" value="64.0"/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbServerSerialPort" value="COM1"/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbServerStartup" value="${studio_install_path}/repo/Extract/Debugger_Support_Packages/RealThread/QEMU/4.2.0.4/qemu-system-arm.exe -M ? -sd sd.bin -nographic -S -s"/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.gdbServerTapName" value=""/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.otherInitCommands" value=""/>
+<stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.qemu.otherRunCommands" value=""/>
 <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.svdPath" value="${studio_install_path}\repo\Extract\Chip_Support_Packages\RealThread\STM32H7\0.1.9\debug\svd\STM32H743.svd"/>
-<stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.connectMode" value="NORMAL"/>
-<stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.debugInterface" value="SWD"/>
-<intAttribute key="org.eclipse.cdt.debug.gdbjtag.core.delay" value="3"/>
-<booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.doHalt" value="false"/>
-<booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.doReset" value="false"/>
-<booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.flashVerify" value="false"/>
 <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.imageFileName" value=""/>
 <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.imageOffset" value=""/>
-<stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.initCommands" value=""/>
-<stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.ipAddress" value="localhost"/>
-<stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.jtagDeviceId" value="org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.genericDevice"/>
+<stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.jtagDevice" value="GNU MCU QEMU"/>
 <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.loadImage" value="true"/>
 <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.loadSymbols" value="true"/>
-<stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.otherDownloadOption" value=""/>
-<stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.otherGdbserverOption" value=""/>
 <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.pcRegister" value=""/>
-<intAttribute key="org.eclipse.cdt.debug.gdbjtag.core.portNumber" value="61235"/>
-<stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.resetMode" value=" -hardRst"/>
-<booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.resetRun" value="true"/>
-<stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.runCommands" value=""/>
+<intAttribute key="org.eclipse.cdt.debug.gdbjtag.core.portNumber" value="1234"/>
 <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.setPcRegister" value="false"/>
+<booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.setResume" value="false"/>
 <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.setStopAt" value="true"/>
 <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.stopAt" value="main"/>
 <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.symbolsFileName" value=""/>
@@ -30,15 +37,15 @@
 <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.useFileForSymbols" value="false"/>
 <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.useProjBinaryForImage" value="true"/>
 <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.useProjBinaryForSymbols" value="true"/>
-<stringAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_NAME" value="${rtt_gnu_gcc}/arm-none-eabi-gdb.exe"/>
+<booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.useRemoteTarget" value="true"/>
+<stringAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_NAME" value="${cross_prefix}gdb${cross_suffix}"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.UPDATE_THREADLIST_ON_SUSPEND" value="false"/>
 <intAttribute key="org.eclipse.cdt.launch.ATTR_BUILD_BEFORE_LAUNCH_ATTR" value="0"/>
-<stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="remote"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug/rtthread.elf"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="stm32h743-painterengine"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="live2d_on_stm32"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/stm32h743-painterengine"/>
+<listEntry value="/live2d_on_stm32"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>
@@ -48,10 +55,4 @@
 <stringAttribute key="org.eclipse.debug.ui.ATTR_CONSOLE_ENCODING" value="UTF-8"/>
 <booleanAttribute key="org.eclipse.debug.ui.ATTR_CONSOLE_OUTPUT_ON" value="true"/>
 <booleanAttribute key="org.eclipse.debug.ui.ATTR_LAUNCH_IN_BACKGROUND" value="true"/>
-<stringAttribute key="org.rtthread.studio.debug.gdbjtag.stlink.adapterName" value="ST-LINK"/>
-<booleanAttribute key="org.rtthread.studio.debug.gdbjtag.stlink.doContinue" value="true"/>
-<stringAttribute key="org.rtthread.studio.debug.gdbjtag.stlink.gdbServerDeviceName" value="STM32H743IITx"/>
-<stringAttribute key="org.rtthread.studio.debug.gdbjtag.stlink.gdbServerExecutable" value="${debugger_install_path}/${stlink_debugger_relative_path}/ST-LINK_gdbserver.exe"/>
-<stringAttribute key="org.rtthread.studio.debug.gdbjtag.stlink.stlinkGdbServer" value="${debugger_install_path}/${stlink_debugger_relative_path}/tools/bin/STM32_Programmer_CLI.exe"/>
-<booleanAttribute key="org.rtthread.studio.debug.gdbjtag.stlink.useRemoteTarget" value="true"/>
 </launchConfiguration>

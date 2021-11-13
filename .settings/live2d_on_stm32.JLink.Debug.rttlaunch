@@ -67,10 +67,10 @@
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.UPDATE_THREADLIST_ON_SUSPEND" value="false"/>
 <intAttribute key="org.eclipse.cdt.launch.ATTR_BUILD_BEFORE_LAUNCH_ATTR" value="0"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug/rtthread.elf"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="stm32h743-painterengine"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="live2d_on_stm32"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/stm32h743-painterengine"/>
+<listEntry value="/live2d_on_stm32"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>
