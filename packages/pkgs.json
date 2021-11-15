@@ -1,1 +1,7 @@
-[]
+[
+ {
+  "path": "/packages/system/CMSIS", 
+  "ver": "latest", 
+  "name": "CMSIS"
+ }
+]

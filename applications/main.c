@@ -94,6 +94,7 @@ int main(void)
     int count = 1;
     int anim_index = 1;
     char anim_action[16];
+    char fps_str[16];
     rt_uint32_t now, lastUpdateTime, elapsed;
     rt_device_t lcd_dev;    //LCD设备对象
     struct rt_device_graphic_info lcd_info;    //LCD参数结构体
@@ -154,7 +155,7 @@ int main(void)
         elapsed = now - lastUpdateTime;
         lastUpdateTime = now;
 
-        if (!(count % 20))  //每个动画执行20次渲染
+        if (!(count % 8))  //每个动画执行8次渲染
         {
             anim_index += 1;
             if(anim_index > 32) //一共32个动画
@@ -180,6 +181,10 @@ int main(void)
         PX_SurfaceClear(&lcd_surface, 0, 0, 320 - 1, 480 - 1, PX_COLOR(0xff, 0x00, 0x00, 0x00));    //清空LCD的帧缓冲
         PX_LiveFrameworkRender(&lcd_surface, &live2d, lcd_surface.width / 2, lcd_surface.height / 2, PX_ALIGN_CENTER, elapsed); //执行Live2d动画渲染
         rt_device_control(lcd_dev, RTGRAPHIC_CTRL_RECT_UPDATE, RT_NULL);    //刷屏
+
+        /* 打印帧率 */
+        sprintf(fps_str, "%1f", 1000.0f / (float)elapsed);
+        LOG_D("Live2d render fps %s", fps_str);
 
         /* 每次渲染后延时5ms为其它任务留出执行时间 */
         rt_thread_mdelay(5);

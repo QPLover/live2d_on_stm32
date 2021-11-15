@@ -221,6 +221,10 @@
 /* Micrium: Micrium software products porting for RT-Thread */
 
 /* end of Micrium: Micrium software products porting for RT-Thread */
+#define PKG_USING_CMSIS
+#define PKG_USING_CMSIS_LATEST_VERSION
+#define PKG_CMSIS_CORE
+#define PKG_CMSIS_DSP
 /* end of system packages */
 
 /* peripheral libraries and drivers */
