@@ -19,7 +19,6 @@
 /* PainterEngine使用的内存池（位于外部SDRAM中） */
 RT_SECTION(".ram_ex") rt_uint8_t px_cache[1024 * 1024 * 16];
 
-px_surface lcd_surface; //LCD帧缓冲对象
 px_memorypool px_mp;    //内存池对象
 PX_LiveFramework live2d;    //Live2d渲染器对象
 
@@ -97,6 +96,7 @@ int main(void)
     char fps_str[16];
     rt_uint32_t now, lastUpdateTime, elapsed;
     rt_device_t lcd_dev;    //LCD设备对象
+    px_surface lcd_surface; //LCD帧缓冲对象
     struct rt_device_graphic_info lcd_info;    //LCD参数结构体
     PX_IO_Data Live2d_file; //存放Live2d文件的内存空间的对象
 
@@ -110,15 +110,7 @@ int main(void)
     px_mp = MP_Create(px_cache, sizeof px_cache);
 
     /* 初始化LCD帧缓冲对象 */
-    lcd_surface.height = lcd_info.height;
-    lcd_surface.width = lcd_info.width;
-    lcd_surface.surfaceBuffer = (px_color *)lcd_info.framebuffer;
-    lcd_surface.MP = &px_mp;
-    lcd_surface.limit_left = 0;
-    lcd_surface.limit_top = 0;
-    lcd_surface.limit_right = lcd_info.width - 1;
-    lcd_surface.limit_bottom = lcd_info.height - 1;
-    LOG_D("LCD surface width %d, height %d, framebuffer addr %x", lcd_surface.width, lcd_surface.height, lcd_surface.surfaceBuffer);
+    PX_SurfaceCreate(&px_mp, lcd_info.width, lcd_info.height, &lcd_surface);
 
     /* 等待SD卡挂载 */
     rt_thread_mdelay(1000);
@@ -180,6 +172,13 @@ int main(void)
         /* 执行Live2d动画渲染并刷新显示屏 */
         PX_SurfaceClear(&lcd_surface, 0, 0, 320 - 1, 480 - 1, PX_COLOR(0xff, 0x00, 0x00, 0x00));    //清空LCD的帧缓冲
         PX_LiveFrameworkRender(&lcd_surface, &live2d, lcd_surface.width / 2, lcd_surface.height / 2, PX_ALIGN_CENTER, elapsed); //执行Live2d动画渲染
+
+        /* 将ABGR格式转换成RGB565格式（下一个版本将使用DMA2D进行转换） */
+        for (int i = 0; i < lcd_info.width * lcd_info.height; i++)
+        {
+            px_color color = lcd_surface.surfaceBuffer[i];
+            ((rt_uint16_t *)lcd_info.framebuffer)[i] = ((rt_uint16_t)color._argb.r >> 3) << 11 | ((rt_uint16_t)color._argb.g >> 2) << 5 | ((rt_uint16_t)color._argb.b >> 3);
+        }
         rt_device_control(lcd_dev, RTGRAPHIC_CTRL_RECT_UPDATE, RT_NULL);    //刷屏
 
         /* 打印帧率 */

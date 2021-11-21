@@ -19,16 +19,23 @@
 #define LOG_TAG             "lcd.port_ili9481"
 #include <drv_log.h>
 
+#define LCD_WR_REG(__reg_val) LCD_PORT->lcd_cmd = __reg_val
+#define LCD_WR_DATA(__data_val) LCD_PORT->lcd_data = __data_val
+
+RT_SECTION(".ram_ex") rt_uint8_t _lcd_framebuffer[LCD_BUF_SIZE];
+
+extern void stm32_8080_lcd_clear_gram(void);
+
 void stm32_8080_lcd_init(void)
 {
     /* Read LCD ID */
-    LCD_Port->lcd_cmd = 0xbf;
-    LOG_D("LCD ID 1 is %x", (rt_uint32_t)LCD_Port->lcd_data);
-    LOG_D("LCD ID 2 is %x", (rt_uint32_t)LCD_Port->lcd_data);
-    LOG_D("LCD ID 3 is %x", (rt_uint32_t)LCD_Port->lcd_data);
-    LOG_D("LCD ID 4 is %x", (rt_uint32_t)LCD_Port->lcd_data);
-    LOG_D("LCD ID 5 is %x", (rt_uint32_t)LCD_Port->lcd_data);
-    LOG_D("LCD ID 6 is %x", (rt_uint32_t)LCD_Port->lcd_data);
+    LCD_PORT->lcd_cmd = 0xbf;
+    LOG_D("LCD ID 1 is %x", (rt_uint32_t)LCD_PORT->lcd_data);
+    LOG_D("LCD ID 2 is %x", (rt_uint32_t)LCD_PORT->lcd_data);
+    LOG_D("LCD ID 3 is %x", (rt_uint32_t)LCD_PORT->lcd_data);
+    LOG_D("LCD ID 4 is %x", (rt_uint32_t)LCD_PORT->lcd_data);
+    LOG_D("LCD ID 5 is %x", (rt_uint32_t)LCD_PORT->lcd_data);
+    LOG_D("LCD ID 6 is %x", (rt_uint32_t)LCD_PORT->lcd_data);
 
     /* ILI9481 initialize */
     LCD_WR_REG(0x11);
@@ -127,10 +134,7 @@ void stm32_8080_lcd_init(void)
     LCD_WR_REG(0x2C);
 
     /* Clear GRAM */
-    for (int i = 0; i < (320 * 480); i++)
-    {
-        LCD_WR_DATA(0x0000);
-    }
+    stm32_8080_lcd_clear_gram();
 
     LCD_WR_REG(0x29);
     LCD_WR_REG(0x3C);
