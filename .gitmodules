@@ -1,4 +1,4 @@
 [submodule "painterengine"]
 	path = painterengine
-	url = https://gitee.com/QPLover/PainterEngine.git
+	url = ../../QPLover/PainterEngine.git
 	branch = cmsis-dsp-lib
