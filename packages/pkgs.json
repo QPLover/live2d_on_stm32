@@ -1,7 +1,12 @@
 [
  {
-  "path": "/packages/system/CMSIS", 
+  "path": "/packages/system/CMSIS/CMSIS_5", 
   "ver": "latest", 
-  "name": "CMSIS"
+  "name": "CMSIS_5"
+ }, 
+ {
+  "path": "/packages/system/CMSIS/CMSIS_5_AUX", 
+  "ver": "latest", 
+  "name": "CMSIS_5_AUX"
  }
 ]

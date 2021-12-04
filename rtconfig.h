@@ -206,6 +206,10 @@
 /* u8g2: a monochrome graphic library */
 
 /* end of u8g2: a monochrome graphic library */
+
+/* PainterEngine: A cross-platform graphics application framework written in C language */
+
+/* end of PainterEngine: A cross-platform graphics application framework written in C language */
 /* end of multimedia packages */
 
 /* tools packages */
@@ -218,13 +222,19 @@
 
 /* end of acceleration: Assembly language or algorithmic acceleration packages */
 
+/* CMSIS: ARM Cortex-M Microcontroller Software Interface Standard */
+
+#define PKG_USING_CMSIS_5
+#define PKG_CMSIS_CORE
+#define PKG_CMSIS_DSP
+#define PKG_USING_CMSIS_5_LATEST_VERSION
+#define PKG_USING_CMSIS_5_AUX
+#define PKG_USING_CMSIS_5_AUX_LATEST_VERSION
+/* end of CMSIS: ARM Cortex-M Microcontroller Software Interface Standard */
+
 /* Micrium: Micrium software products porting for RT-Thread */
 
 /* end of Micrium: Micrium software products porting for RT-Thread */
-#define PKG_USING_CMSIS
-#define PKG_USING_CMSIS_LATEST_VERSION
-#define PKG_CMSIS_CORE
-#define PKG_CMSIS_DSP
 /* end of system packages */
 
 /* peripheral libraries and drivers */
